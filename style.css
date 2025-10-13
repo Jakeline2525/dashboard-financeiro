@@ -1,0 +1,46 @@
+/* style.css */
+
+/* Estiliza os cartões de KPI (st.metric) */
+div[data-testid="stMetric"] {
+    background-color: #0d1117; /* Fundo escuro */
+    border: 1px solid #30363d; /* Borda sutil */
+    border-radius: 10px;
+    padding: 15px;
+    color: white;
+}
+
+/* Cor do valor principal do KPI */
+div[data-testid="stMetricValue"] {
+    font-size: 2.2rem;
+    color: #58a6ff; /* Azul claro */
+}
+
+/* Cor do rótulo do KPI */
+div[data-testid="stMetricLabel"] {
+    color: #c9d1d9; /* Cinza claro */
+}
+
+/* Estilo para o delta (indicador de mudança) */
+div[data-testid="stMetricDelta"] svg {
+    fill: #3fb950; /* Verde para positivo */
+}
+
+/* Remove a seta para baixo padrão do delta negativo para usar a cor */
+div[data-testid="stMetricDelta"] > div[data-testid="stMarkdownContainer"] > p {
+    color: #f85149 !important; /* Vermelho para negativo */
+}
+
+/* Botões com estilo moderno */
+div.stButton > button {
+    background-color: #238636;
+    color: white;
+    border-radius: 8px;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+}
+
+div.stButton > button:hover {
+    background-color: #2ea043;
+    border: none;
+}
