@@ -2,17 +2,16 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-# import locale -> NÃO PRECISAMOS MAIS DESTA LINHA
 import os
 import glob
 
 # --- CAMINHO DA PASTA DE CACHE PERSISTENTE ---
 CACHE_DIR = "/var/data/cache"
 
-# --- CONFIGURAÇÃO DA PÁGINA (SEM LOCALE) ---
+# --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(layout="wide", page_title="Análise de Despesas", initial_sidebar_state="expanded")
 
-# --- ESTILOS E TEMAS (sem alterações) ---
+# --- ESTILOS E TEMAS ---
 def local_css(file_name):
     try:
         with open(file_name) as f:
@@ -36,13 +35,23 @@ plotly_template = criar_tema_minimalista()
 # --- FUNÇÕES DE GERENCIAMENTO DE DADOS ---
 
 def get_lista_dashboards_salvos():
+    """Retorna uma lista com os nomes dos dashboards salvos na pasta de cache."""
+    # --- INÍCIO DA CORREÇÃO DEFINITIVA ---
+    # Apenas verifica se o diretório existe. NUNCA tenta criá-lo aqui.
     if not os.path.exists(CACHE_DIR):
-        os.makedirs(CACHE_DIR)
+        return [] # Se não existe, retorna lista vazia.
+    # --- FIM DA CORREÇÃO DEFINITIVA ---
+    
     arquivos_parquet = glob.glob(os.path.join(CACHE_DIR, "*.parquet"))
     return sorted([os.path.basename(f).replace('.parquet', '') for f in arquivos_parquet])
 
 def processar_e_salvar_planilha(arquivo_excel):
+    """Processa uma planilha e a salva em um arquivo .parquet na pasta de cache."""
     try:
+        # Garante que o diretório de cache exista ANTES de tentar salvar.
+        # Isso é seguro, pois só cria se não existir.
+        os.makedirs(CACHE_DIR, exist_ok=True)
+
         df = pd.read_excel(arquivo_excel, engine='openpyxl')
         df.columns = [str(col).lower().strip() for col in df.columns]
         
@@ -61,20 +70,13 @@ def processar_e_salvar_planilha(arquivo_excel):
         df['valor_abs'] = df['valor_numerico']
         df['status'] = df['status'].astype(str).str.lower().str.strip()
         
-        # --- INÍCIO DA NOVA LÓGICA DE TRADUÇÃO ---
-        # 1. Cria a coluna 'mes_ano' no formato padrão (inglês)
         df['mes_ano'] = df['data'].dt.strftime('%Y-%m (%b)')
-        
-        # 2. Cria um dicionário de tradução
         mapa_meses = {
             'Jan': 'Jan', 'Feb': 'Fev', 'Mar': 'Mar', 'Apr': 'Abr', 'May': 'Mai', 'Jun': 'Jun',
             'Jul': 'Jul', 'Aug': 'Ago', 'Sep': 'Set', 'Oct': 'Out', 'Nov': 'Nov', 'Dec': 'Dez'
         }
-        
-        # 3. Substitui os nomes dos meses em inglês pelos em português
         for mes_en, mes_pt in mapa_meses.items():
             df['mes_ano'] = df['mes_ano'].str.replace(mes_en, mes_pt)
-        # --- FIM DA NOVA LÓGICA DE TRADUÇÃO ---
 
         df_despesas = df[df['tipo_lancamento'].str.lower() == 'despesa'].copy()
         df_despesas.dropna(subset=['data'], inplace=True)
@@ -184,6 +186,7 @@ if dashboard_selecionado != "Nenhum":
 
 else:
     st.info("Selecione um dashboard salvo ou carregue uma nova planilha na barra lateral.")
+
 
 
 
