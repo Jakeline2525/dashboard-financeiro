@@ -36,11 +36,9 @@ plotly_template = criar_tema_minimalista()
 
 def get_lista_dashboards_salvos():
     """Retorna uma lista com os nomes dos dashboards salvos na pasta de cache."""
-    # --- INÍCIO DA CORREÇÃO DEFINITIVA ---
-    # Apenas verifica se o diretório existe. NUNCA tenta criá-lo aqui.
+    # Apenas verifica se o diretório existe. NUNCA tenta criá-lo.
     if not os.path.exists(CACHE_DIR):
-        return [] # Se não existe, retorna lista vazia.
-    # --- FIM DA CORREÇÃO DEFINITIVA ---
+        return []
     
     arquivos_parquet = glob.glob(os.path.join(CACHE_DIR, "*.parquet"))
     return sorted([os.path.basename(f).replace('.parquet', '') for f in arquivos_parquet])
@@ -48,10 +46,8 @@ def get_lista_dashboards_salvos():
 def processar_e_salvar_planilha(arquivo_excel):
     """Processa uma planilha e a salva em um arquivo .parquet na pasta de cache."""
     try:
-        # Garante que o diretório de cache exista ANTES de tentar salvar.
-        # Isso é seguro, pois só cria se não existir.
-        os.makedirs(CACHE_DIR, exist_ok=True)
-
+        # NÃO TENTA CRIAR O DIRETÓRIO AQUI. ASSUME QUE ELE EXISTE.
+        
         df = pd.read_excel(arquivo_excel, engine='openpyxl')
         df.columns = [str(col).lower().strip() for col in df.columns]
         
