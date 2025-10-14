@@ -1,12 +1,8 @@
 #!/bin/bash
 
-# Instala as dependências
+# Instala as dependências listadas no requirements.txt
 pip install -r requirements.txt
 
-# Instala e configura o locale pt_BR para as datas em português
-apt-get update && apt-get install -y locales
-locale-gen pt_BR.UTF-8
-export LANG=pt_BR.UTF-8
-
 # Roda a aplicação Streamlit
+# Não precisamos mais dos comandos de locale aqui
 streamlit run dashboard.py --server.port $PORT
