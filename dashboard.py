@@ -2,34 +2,27 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import locale
+# import locale -> NÃO PRECISAMOS MAIS DESTA LINHA
 import os
-import glob # Biblioteca para encontrar arquivos
+import glob
 
 # --- CAMINHO DA PASTA DE CACHE PERSISTENTE ---
-# Este é o mesmo caminho que você configurou no Disco do Render
 CACHE_DIR = "/var/data/cache"
 
-# --- CONFIGURAÇÃO DO LOCALE E DA PÁGINA ---
-# Define o locale diretamente. O script de deploy garante que ele exista.
-locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
-
+# --- CONFIGURAÇÃO DA PÁGINA (SEM LOCALE) ---
 st.set_page_config(layout="wide", page_title="Análise de Despesas", initial_sidebar_state="expanded")
 
-# --- ESTILOS E TEMAS ---
+# --- ESTILOS E TEMAS (sem alterações) ---
 def local_css(file_name):
-    """Carrega um arquivo CSS local."""
     try:
         with open(file_name) as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
     except FileNotFoundError:
-        # Não exibe aviso se o arquivo de estilo não for encontrado, para não poluir a interface.
         pass
 
 local_css("style.css")
 
 def criar_tema_minimalista():
-    """Cria um template Plotly ultra minimalista com fundo preto."""
     return go.Layout(
         font=dict(family="sans-serif", size=12, color="#FAFAFA"),
         plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
@@ -43,15 +36,12 @@ plotly_template = criar_tema_minimalista()
 # --- FUNÇÕES DE GERENCIAMENTO DE DADOS ---
 
 def get_lista_dashboards_salvos():
-    """Retorna uma lista com os nomes dos dashboards salvos na pasta de cache."""
     if not os.path.exists(CACHE_DIR):
-        os.makedirs(CACHE_DIR) # Cria a pasta de cache se ela não existir
-    
+        os.makedirs(CACHE_DIR)
     arquivos_parquet = glob.glob(os.path.join(CACHE_DIR, "*.parquet"))
     return sorted([os.path.basename(f).replace('.parquet', '') for f in arquivos_parquet])
 
 def processar_e_salvar_planilha(arquivo_excel):
-    """Processa uma planilha e a salva em um arquivo .parquet na pasta de cache."""
     try:
         df = pd.read_excel(arquivo_excel, engine='openpyxl')
         df.columns = [str(col).lower().strip() for col in df.columns]
@@ -70,7 +60,22 @@ def processar_e_salvar_planilha(arquivo_excel):
         df['valor_numerico'] = pd.to_numeric(df['valor_numerico'], errors='coerce').fillna(0)
         df['valor_abs'] = df['valor_numerico']
         df['status'] = df['status'].astype(str).str.lower().str.strip()
-        df['mes_ano'] = df['data'].dt.strftime('%Y-%m (%b)').str.capitalize()
+        
+        # --- INÍCIO DA NOVA LÓGICA DE TRADUÇÃO ---
+        # 1. Cria a coluna 'mes_ano' no formato padrão (inglês)
+        df['mes_ano'] = df['data'].dt.strftime('%Y-%m (%b)')
+        
+        # 2. Cria um dicionário de tradução
+        mapa_meses = {
+            'Jan': 'Jan', 'Feb': 'Fev', 'Mar': 'Mar', 'Apr': 'Abr', 'May': 'Mai', 'Jun': 'Jun',
+            'Jul': 'Jul', 'Aug': 'Ago', 'Sep': 'Set', 'Oct': 'Out', 'Nov': 'Nov', 'Dec': 'Dez'
+        }
+        
+        # 3. Substitui os nomes dos meses em inglês pelos em português
+        for mes_en, mes_pt in mapa_meses.items():
+            df['mes_ano'] = df['mes_ano'].str.replace(mes_en, mes_pt)
+        # --- FIM DA NOVA LÓGICA DE TRADUÇÃO ---
+
         df_despesas = df[df['tipo_lancamento'].str.lower() == 'despesa'].copy()
         df_despesas.dropna(subset=['data'], inplace=True)
         
@@ -81,7 +86,7 @@ def processar_e_salvar_planilha(arquivo_excel):
         st.error(f"Ocorreu um erro inesperado ao processar o arquivo: {e}")
         return False
 
-# --- LÓGICA PRINCIPAL DA APLICAÇÃO ---
+# --- O RESTO DO CÓDIGO (LÓGICA DA APLICAÇÃO) PERMANECE IDÊNTICO ---
 st.title("Análise de Despesas")
 st.sidebar.header("Gerenciador de Dashboards")
 
@@ -179,13 +184,6 @@ if dashboard_selecionado != "Nenhum":
 
 else:
     st.info("Selecione um dashboard salvo ou carregue uma nova planilha na barra lateral.")
-
-
-
-
-
-
-
 
 
 
