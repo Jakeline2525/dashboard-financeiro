@@ -11,24 +11,25 @@ import glob # Biblioteca para encontrar arquivos
 CACHE_DIR = "/var/data/cache"
 
 # --- CONFIGURAÇÃO DO LOCALE E DA PÁGINA ---
-try:
-    locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
-except locale.Error:
-    st.warning("Locale 'pt_BR.UTF-8' não encontrado. As datas podem aparecer em inglês.")
+# Define o locale diretamente. O script de deploy garante que ele exista.
+locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
 
 st.set_page_config(layout="wide", page_title="Análise de Despesas", initial_sidebar_state="expanded")
 
-# --- ESTILOS E TEMAS (sem alterações) ---
+# --- ESTILOS E TEMAS ---
 def local_css(file_name):
+    """Carrega um arquivo CSS local."""
     try:
         with open(file_name) as f:
             st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
     except FileNotFoundError:
-        pass # Não mostra aviso se o style.css não for encontrado
+        # Não exibe aviso se o arquivo de estilo não for encontrado, para não poluir a interface.
+        pass
 
 local_css("style.css")
 
 def criar_tema_minimalista():
+    """Cria um template Plotly ultra minimalista com fundo preto."""
     return go.Layout(
         font=dict(family="sans-serif", size=12, color="#FAFAFA"),
         plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
@@ -47,8 +48,7 @@ def get_lista_dashboards_salvos():
         os.makedirs(CACHE_DIR) # Cria a pasta de cache se ela não existir
     
     arquivos_parquet = glob.glob(os.path.join(CACHE_DIR, "*.parquet"))
-    # Extrai apenas o nome base do arquivo, sem a extensão .parquet
-    return [os.path.basename(f).replace('.parquet', '') for f in arquivos_parquet]
+    return sorted([os.path.basename(f).replace('.parquet', '') for f in arquivos_parquet])
 
 def processar_e_salvar_planilha(arquivo_excel):
     """Processa uma planilha e a salva em um arquivo .parquet na pasta de cache."""
@@ -61,11 +61,9 @@ def processar_e_salvar_planilha(arquivo_excel):
             st.error(f"Erro: Colunas ausentes. Verifique se a planilha contém: {', '.join(colunas_necessarias)}.")
             return False
 
-        # Gera o nome do arquivo de cache a partir do nome do arquivo original
-        nome_base = os.path.splitext(arquivo_excel.name)[0]
+        nome_base = os.path.splitext(arquivo_excel.name)[0].replace(" ", "_")
         caminho_cache = os.path.join(CACHE_DIR, f"{nome_base}.parquet")
 
-        # (O resto do processamento é o mesmo)
         df.rename(columns={'descrição': 'descricao', 'despesa': 'categoria', 'tipo': 'tipo_lancamento', 'centro de custos': 'centro_custo'}, inplace=True)
         df['data'] = pd.to_datetime(df['data'], errors='coerce')
         df['valor_numerico'] = df['valor'].astype(str).str.replace('R$', '', regex=False).str.replace('.', '', regex=False).str.replace(',', '.', regex=False).str.strip()
@@ -76,7 +74,6 @@ def processar_e_salvar_planilha(arquivo_excel):
         df_despesas = df[df['tipo_lancamento'].str.lower() == 'despesa'].copy()
         df_despesas.dropna(subset=['data'], inplace=True)
         
-        # Salva o DataFrame processado no arquivo Parquet
         df_despesas.to_parquet(caminho_cache)
         return True
 
@@ -88,17 +85,14 @@ def processar_e_salvar_planilha(arquivo_excel):
 st.title("Análise de Despesas")
 st.sidebar.header("Gerenciador de Dashboards")
 
-# Pega a lista de dashboards já salvos
 dashboards_salvos = get_lista_dashboards_salvos()
 
-# Menu para selecionar um dashboard existente
 dashboard_selecionado = st.sidebar.selectbox(
     "Visualizar Dashboard Salvo",
     options=["Nenhum"] + dashboards_salvos,
     index=0
 )
 
-# Seção para carregar uma nova planilha
 with st.sidebar.expander("Carregar Nova Planilha"):
     uploaded_file = st.file_uploader("Escolha uma planilha Excel (.xlsx)", type="xlsx")
     if uploaded_file:
@@ -107,26 +101,21 @@ with st.sidebar.expander("Carregar Nova Planilha"):
                 sucesso = processar_e_salvar_planilha(uploaded_file)
             if sucesso:
                 st.success(f"Dashboard '{os.path.splitext(uploaded_file.name)[0]}' salvo com sucesso!")
-                # Força o recarregamento da página para atualizar a lista
                 st.rerun()
             else:
                 st.error("Falha ao salvar o dashboard.")
 
-# --- EXIBIÇÃO DO DASHBOARD SELECIONADO ---
 if dashboard_selecionado != "Nenhum":
     try:
-        # Carrega os dados do arquivo Parquet correspondente
         caminho_arquivo = os.path.join(CACHE_DIR, f"{dashboard_selecionado}.parquet")
         df = pd.read_parquet(caminho_arquivo)
 
         st.header(f"Analisando: {dashboard_selecionado.replace('_', ' ').title()}")
         
-        # Seção para excluir o dashboard atual
         if st.sidebar.button(f"Excluir Dashboard '{dashboard_selecionado}'", type="primary"):
             os.remove(caminho_arquivo)
             st.rerun()
 
-        # --- Filtros e Gráficos (código idêntico ao anterior) ---
         st.sidebar.header("Filtros")
         categorias = ['Todas'] + sorted(df['categoria'].dropna().unique().tolist())
         categoria_selecionada = st.sidebar.multiselect("Categoria", categorias, default=['Todas'])
@@ -190,6 +179,8 @@ if dashboard_selecionado != "Nenhum":
 
 else:
     st.info("Selecione um dashboard salvo ou carregue uma nova planilha na barra lateral.")
+
+
 
 
 
