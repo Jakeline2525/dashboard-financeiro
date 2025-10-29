@@ -3,3 +3,7 @@ pandas
 plotly
 openpyxl
 pyarrow
+requests
+validate-docbr
+phonenumbers
+xlrd
