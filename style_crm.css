@@ -1,0 +1,379 @@
+/* ========================================
+   DISTRIBUIDOR CRM | HAG - Estilo Corporativo
+   Tema: Branco e Azul Profissional
+   ======================================== */
+
+/* === VARIÁVEIS DE CORES === */
+:root {
+    --primary-blue: #0066CC;
+    --secondary-blue: #0052A3;
+    --light-blue: #E6F2FF;
+    --dark-blue: #003D7A;
+    --success-green: #28A745;
+    --warning-yellow: #FFC107;
+    --danger-red: #DC3545;
+    --white: #FFFFFF;
+    --light-gray: #F8F9FA;
+    --medium-gray: #E9ECEF;
+    --dark-gray: #6C757D;
+    --text-dark: #212529;
+}
+
+/* === FUNDO GERAL === */
+.stApp {
+    background-color: var(--light-gray);
+}
+
+/* === CABEÇALHO === */
+h1 {
+    color: var(--primary-blue) !important;
+    font-weight: 700 !important;
+    border-bottom: 3px solid var(--primary-blue);
+    padding-bottom: 15px;
+    margin-bottom: 30px;
+}
+
+h2, h3 {
+    color: var(--secondary-blue) !important;
+    font-weight: 600 !important;
+}
+
+/* === SIDEBAR === */
+section[data-testid="stSidebar"] {
+    background-color: var(--white);
+    border-right: 2px solid var(--medium-gray);
+}
+
+section[data-testid="stSidebar"] > div {
+    background-color: var(--white);
+}
+
+/* === CARTÕES E CONTAINERS === */
+div[data-testid="stVerticalBlock"] > div[data-testid="stVerticalBlock"] {
+    background-color: var(--white);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* === EXPANDERS === */
+div[data-testid="stExpander"] {
+    background-color: var(--white) !important;
+    border: 2px solid var(--primary-blue) !important;
+    border-radius: 8px !important;
+    margin-bottom: 15px;
+}
+
+div[data-testid="stExpander"] summary {
+    background-color: var(--light-blue) !important;
+    color: var(--primary-blue) !important;
+    font-weight: 600 !important;
+    padding: 15px !important;
+}
+
+/* === BOTÕES === */
+div.stButton > button {
+    background-color: var(--primary-blue);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 12px 30px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 102, 204, 0.3);
+}
+
+div.stButton > button:hover {
+    background-color: var(--secondary-blue);
+    box-shadow: 0 4px 10px rgba(0, 102, 204, 0.5);
+    transform: translateY(-2px);
+}
+
+div.stButton > button:active {
+    transform: translateY(0);
+}
+
+/* Botão de sucesso */
+div.stButton > button[kind="primary"] {
+    background-color: var(--success-green);
+}
+
+div.stButton > button[kind="primary"]:hover {
+    background-color: #218838;
+}
+
+/* Botão de perigo */
+div.stButton > button[kind="secondary"] {
+    background-color: var(--danger-red);
+}
+
+div.stButton > button[kind="secondary"]:hover {
+    background-color: #C82333;
+}
+
+/* === INPUTS === */
+input, textarea, select {
+    border: 2px solid var(--medium-gray) !important;
+    border-radius: 6px !important;
+    padding: 10px !important;
+    transition: border-color 0.3s ease !important;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: var(--primary-blue) !important;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1) !important;
+}
+
+/* === CHECKBOXES === */
+div[data-testid="stCheckbox"] {
+    padding: 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+}
+
+div[data-testid="stCheckbox"]:hover {
+    background-color: var(--light-blue);
+}
+
+/* === MÉTRICAS (KPIs) === */
+div[data-testid="stMetric"] {
+    background: linear-gradient(135deg, var(--white) 0%, var(--light-blue) 100%);
+    border: 2px solid var(--primary-blue);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.15);
+}
+
+div[data-testid="stMetricValue"] {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-blue);
+}
+
+div[data-testid="stMetricLabel"] {
+    color: var(--dark-gray);
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+/* === ALERTAS === */
+div[data-testid="stAlert"] {
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+}
+
+/* Sucesso */
+div[data-baseweb="notification"][kind="success"] {
+    background-color: #D4EDDA;
+    border-left: 5px solid var(--success-green);
+    color: #155724;
+}
+
+/* Informação */
+div[data-baseweb="notification"][kind="info"] {
+    background-color: var(--light-blue);
+    border-left: 5px solid var(--primary-blue);
+    color: var(--dark-blue);
+}
+
+/* Aviso */
+div[data-baseweb="notification"][kind="warning"] {
+    background-color: #FFF3CD;
+    border-left: 5px solid var(--warning-yellow);
+    color: #856404;
+}
+
+/* Erro */
+div[data-baseweb="notification"][kind="error"] {
+    background-color: #F8D7DA;
+    border-left: 5px solid var(--danger-red);
+    color: #721C24;
+}
+
+/* === PROGRESS BAR === */
+div[data-testid="stProgress"] > div > div {
+    background-color: var(--primary-blue) !important;
+}
+
+/* === DATAFRAME === */
+div[data-testid="stDataFrame"] {
+    border: 2px solid var(--medium-gray);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* === TABS === */
+button[data-baseweb="tab"] {
+    color: var(--dark-gray);
+    font-weight: 600;
+    border-bottom: 3px solid transparent;
+}
+
+button[data-baseweb="tab"][aria-selected="true"] {
+    color: var(--primary-blue);
+    border-bottom: 3px solid var(--primary-blue);
+}
+
+/* === FILE UPLOADER === */
+div[data-testid="stFileUploader"] {
+    background-color: var(--light-blue);
+    border: 2px dashed var(--primary-blue);
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+}
+
+div[data-testid="stFileUploader"]:hover {
+    background-color: #CCE5FF;
+    border-color: var(--secondary-blue);
+}
+
+/* === SELECTBOX === */
+div[data-baseweb="select"] {
+    border-radius: 6px;
+}
+
+/* === RADIO BUTTONS === */
+div[role="radiogroup"] label {
+    background-color: var(--white);
+    border: 2px solid var(--medium-gray);
+    border-radius: 8px;
+    padding: 15px;
+    margin: 5px 0;
+    transition: all 0.3s ease;
+}
+
+div[role="radiogroup"] label:hover {
+    border-color: var(--primary-blue);
+    background-color: var(--light-blue);
+}
+
+div[role="radiogroup"] input:checked + div {
+    border-color: var(--primary-blue);
+    background-color: var(--light-blue);
+}
+
+/* === SPINNER === */
+div[data-testid="stSpinner"] > div {
+    border-top-color: var(--primary-blue) !important;
+}
+
+/* === DIVISOR === */
+hr {
+    border-color: var(--medium-gray);
+    margin: 30px 0;
+}
+
+/* === ÍCONES DE STATUS === */
+.status-icon {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.status-success {
+    background-color: var(--success-green);
+}
+
+.status-warning {
+    background-color: var(--warning-yellow);
+}
+
+.status-error {
+    background-color: var(--danger-red);
+}
+
+.status-info {
+    background-color: var(--primary-blue);
+}
+
+/* === BADGES === */
+.badge {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin: 0 5px;
+}
+
+.badge-primary {
+    background-color: var(--primary-blue);
+    color: var(--white);
+}
+
+.badge-success {
+    background-color: var(--success-green);
+    color: var(--white);
+}
+
+.badge-warning {
+    background-color: var(--warning-yellow);
+    color: var(--text-dark);
+}
+
+.badge-danger {
+    background-color: var(--danger-red);
+    color: var(--white);
+}
+
+/* === TOOLTIPS === */
+div[data-testid="stTooltipIcon"] {
+    color: var(--primary-blue);
+}
+
+/* === SCROLLBAR === */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--light-gray);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-blue);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary-blue);
+}
+
+/* === ANIMAÇÕES === */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* === RESPONSIVIDADE === */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem !important;
+    }
+    
+    div[data-testid="stMetricValue"] {
+        font-size: 1.8rem;
+    }
+    
+    div.stButton > button {
+        padding: 10px 20px;
+        font-size: 14px;
+    }
+}
